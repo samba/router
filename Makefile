@@ -1,7 +1,9 @@
 
+GOFILES := $(shell find ./ -name '*.go')
+
 
 build: ./router
 
 
-./router:
-	go build -o $@ main.go
+./router: main.go $(GOFILES)
+	go build -o $@ $<
