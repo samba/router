@@ -20,7 +20,7 @@ const (
 type client struct {
 	conn   net.Conn
 	mu     sync.Mutex
-	srv    *server
+	srv    *Server
 	status int
 	closed chan int
 	info   info

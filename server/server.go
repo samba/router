@@ -15,7 +15,7 @@ type Message struct {
 	packet packets.ControlPacket
 }
 
-type server struct {
+type Server struct {
 	port      string
 	infoTopic string
 	info      map[string]string
@@ -24,8 +24,8 @@ type server struct {
 	pool      chan *Message
 }
 
-func NewServer(port, topic string) *server {
-	return &server{
+func NewServer(port, topic string) *Server {
+	return &Server{
 		port:      port,
 		infoTopic: topic,
 		info:      make(map[string]string),
@@ -33,7 +33,7 @@ func NewServer(port, topic string) *server {
 	}
 }
 
-func (s *server) handleMessage() {
+func (s *Server) handleMessage() {
 	if s.pool == nil {
 		s.pool = make(chan *Message, 100)
 	}
@@ -47,7 +47,7 @@ func (s *server) handleMessage() {
 
 }
 
-func (s *server) Start() {
+func (s *Server) Start() {
 
 	go s.handleMessage()
 
@@ -86,7 +86,7 @@ func (s *server) Start() {
 	}
 }
 
-func (s *server) handleConnection(conn net.Conn) {
+func (s *Server) handleConnection(conn net.Conn) {
 	//process connect packet
 	packet, err := packets.ReadPacket(conn)
 	if err != nil {
@@ -147,7 +147,7 @@ func (s *server) handleConnection(conn net.Conn) {
 
 }
 
-func (s *server) removeBrokerInfo(id string) map[string]string {
+func (s *Server) removeBrokerInfo(id string) map[string]string {
 
 	s.mu.Lock()
 	delete(s.info, id)
@@ -156,11 +156,11 @@ func (s *server) removeBrokerInfo(id string) map[string]string {
 	return s.info
 }
 
-func (s *server) getBrokerInfo() map[string]string {
+func (s *Server) getBrokerInfo() map[string]string {
 	return s.info
 }
 
-func (s *server) addBrokerInfo(id, url string) map[string]string {
+func (s *Server) addBrokerInfo(id, url string) map[string]string {
 
 	s.mu.Lock()
 	s.info[id] = url
@@ -169,7 +169,7 @@ func (s *server) addBrokerInfo(id, url string) map[string]string {
 	return s.info
 }
 
-func (s *server) broadcastBorkerInfo(data map[string]string) {
+func (s *Server) broadcastBorkerInfo(data map[string]string) {
 	info := &BrokerInfo{
 		Data: data,
 	}
@@ -196,7 +196,7 @@ func (s *server) broadcastBorkerInfo(data map[string]string) {
 	return
 }
 
-func (s *server) sendBrokerInfo(c *client) {
+func (s *Server) sendBrokerInfo(c *client) {
 	data := s.getBrokerInfo()
 
 	if len(data) > 0 {
