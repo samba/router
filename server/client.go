@@ -162,7 +162,7 @@ func (c *client) processPublish(packet *packets.PublishPacket) {
 
 	topic := packet.TopicName
 	if topic != srv.infoTopic {
-		log.Debug("recv unknow message")
+		log.Debug("recv unknow message on topic: ", topic)
 		return
 	}
 
